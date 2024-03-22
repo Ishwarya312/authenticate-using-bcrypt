@@ -1,11 +1,12 @@
 var express = require('express');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
-const users = require('./data/data');
+const loginController = require('./controllers/loginController');
+const registerController = require('./controllers/registerController');
 
 const app = express();
 const PORT = 3000;
 const workFactor = 10;
+
 app.use(bodyParser.json());
 
 
@@ -13,33 +14,12 @@ app.get('/', function (req, res) {
     res.send('Hello World!');
 });
 
-app.post('/register', (req, res) => {
-    const { username, password } = req.body;
+app.post('/register', registerController);
 
-    bcrypt.genSalt(workFactor, function (err, salt) {
-        bcrypt.hash(password, salt, function (err, hash) {
-            console.log(`Hash: ${hash}`);
-        });
-    });
-})
-
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-
-    const user = users.find(user => user.username === username);
-    console.log(user);
-    if (!user.username) {
-        return res.status(401).send('Invalid username or password');
-    }
-
-    bcrypt.compare(password, user.passwordHash, (err, result) => {
-        if (err || !result) {
-            return res.status(401).send(`Invalid credentials `);
-        }
-        res.send(`Login successful ${result}`);
-    });
-});
+app.post('/login', loginController);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = app;
