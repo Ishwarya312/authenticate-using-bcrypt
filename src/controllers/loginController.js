@@ -5,16 +5,15 @@ const loginController = async (req, res) => {
     const { username, password } = req.body;
 
     const user = users.find(user => user.username === username);
-    console.log(user);
-    if (!user.username) {
+    if (!user || !user.username) {
         return res.status(401).send('Invalid username or password');
     }
 
     bcrypt.compare(password, user.passwordHash, (err, result) => {
         if (err || !result) {
-            return res.status(401).send(`Invalid credentials `);
+            return res.status(401).send("Invalid credentials");
         }
-        res.send(`Login successful ${result}`);
+        res.send(`Login successful`);
     });
 }
 
